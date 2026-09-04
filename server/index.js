@@ -297,7 +297,7 @@ app.get("/api/kta", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
   console.log(`Server Express jalan di http://localhost:${PORT}`);
 });
