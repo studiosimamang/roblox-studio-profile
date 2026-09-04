@@ -5,10 +5,14 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000; // ✅ BENAR
 
 app.use(cors());
 app.use(express.json()); // Parsing JSON body request
+app.get("/", (req, res) => {
+  res.send("Backend Studio Si Mamang Aktif!");
+});
+
 
 // Configuration
 const ROBLOX_GROUP_ID = "485653618";
@@ -67,17 +71,51 @@ app.get("/api/members", (req, res) => {
 });
 
 // REGISTER MEMBER BARU
+// REGISTER MEMBER BARU
 app.post("/api/members", async (req, res) => {
   const { keyword } = req.body;
   if (!keyword)
     return res.status(400).json({ error: "Roblox Username/ID wajib diisi!" });
 
   try {
-    // Proxy fetch profil dari Roblox
-    const robloxRes = await axios.get(
-      `http://localhost:${PORT}/api/kta?keyword=${encodeURIComponent(keyword)}`,
+    // Ambil data profil dari Roblox secara langsung (Tanpa Axios ke localhost)
+    let targetUser = null;
+
+    if (!isNaN(keyword)) {
+      try {
+        const directUserRes = await axios.get(
+          `https://users.roblox.com/v1/users/${keyword}`,
+        );
+        targetUser = directUserRes.data;
+      } catch (e) {}
+    }
+
+    if (!targetUser) {
+      const searchRes = await axios.get(
+        `https://users.roblox.com/v1/users/search?keyword=${encodeURIComponent(keyword)}&limit=10`,
+      );
+      if (searchRes.data.data && searchRes.data.data.length > 0) {
+        targetUser =
+          searchRes.data.data.find(
+            (u) => u.name.toLowerCase() === keyword.toLowerCase(),
+          ) || searchRes.data.data[0];
+      }
+    }
+
+    if (!targetUser)
+      return res.status(404).json({ error: "User Roblox tidak ditemukan!" });
+
+    const avatarRes = await axios.get(
+      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${targetUser.id}&size=150x150&format=Png&isCircular=false`,
     );
-    const userData = robloxRes.data;
+
+    const userData = {
+      id: targetUser.id,
+      name: targetUser.displayName || targetUser.name,
+      username: `@${targetUser.name}`,
+      avatar:
+        avatarRes.data.data?.[0]?.imageUrl || "https://via.placeholder.com/150",
+    };
 
     const db = getMembersDB();
     if (db.some((m) => m.id.toString() === userData.id.toString())) {
@@ -97,11 +135,9 @@ app.post("/api/members", async (req, res) => {
 
     res.json({ message: "Berhasil mendaftar member!", member: newMember });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        error: err.response?.data?.error || "Gagal memproses data Roblox.",
-      });
+    res.status(500).json({
+      error: err.response?.data?.error || "Gagal memproses data Roblox.",
+    });
   }
 });
 
@@ -121,12 +157,10 @@ app.get("/api/members/check", (req, res) => {
   );
 
   if (!member) {
-    return res
-      .status(404)
-      .json({
-        error:
-          "User belum terdaftar sebagai Member! Silakan daftar terlebih dahulu.",
-      });
+    return res.status(404).json({
+      error:
+        "User belum terdaftar sebagai Member! Silakan daftar terlebih dahulu.",
+    });
   }
 
   res.json(member);
