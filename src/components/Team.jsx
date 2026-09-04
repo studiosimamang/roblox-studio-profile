@@ -1,9 +1,9 @@
-// Buat variabel ini di file helper API atau di bagian atas komponen kamu:
-const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { teamMembers as defaultTeam } from '../data/studioData';
+
+// Variabel API URL ditaruh setelah import
+const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
 
 export default function Team() {
   const [team, setTeam] = useState(defaultTeam);
@@ -60,6 +60,10 @@ export default function Team() {
                       src={member.avatar} 
                       alt={member.name}
                       className="w-full h-full object-cover rounded-full group-hover:scale-105 transition duration-300" 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-38C0160CBF08D325F42FD42644AC8D35-Png/150/150/AvatarHeadshot/Png/noFilter";
+                      }}
                     />
                   </div>
                 </div>

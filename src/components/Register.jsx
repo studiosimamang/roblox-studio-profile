@@ -1,8 +1,8 @@
-// Buat variabel ini di file helper API atau di bagian atas komponen kamu:
-const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+
+// Variabel API URL ditaruh setelah import
+const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
 
 export default function Register({ onRegisterSuccess }) {
   const [robloxInput, setRobloxInput] = useState('');

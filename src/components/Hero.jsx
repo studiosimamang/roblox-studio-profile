@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { studioInfo } from '../data/studioData';
 
+// Gunakan Environment Variable
+const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
+
 export default function Hero({ onNavigate }) {
   const [groupMembers, setGroupMembers] = useState('0');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/group')
+    fetch(`${API_URL}/api/group`)
       .then((res) => res.json())
       .then((data) => {
         if (data.memberCount) setGroupMembers(data.memberCount);
@@ -15,7 +18,6 @@ export default function Hero({ onNavigate }) {
   }, []);
 
   return (
-    /* Hapus border-b border-slate-900 di baris ini agar garis di bawah hilang */
     <section 
       id="hero" 
       className="relative bg-slate-950 flex items-center justify-center overflow-hidden py-12"

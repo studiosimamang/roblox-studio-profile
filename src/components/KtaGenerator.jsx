@@ -1,9 +1,9 @@
-// Buat variabel ini di file helper API atau di bagian atas komponen kamu:
-const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { toPng } from 'html-to-image';
+
+// Variabel API URL ditaruh setelah import
+const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
 
 export default function KtaGenerator({ selectedMember }) {
   const [searchKey, setSearchKey] = useState('');
@@ -120,7 +120,15 @@ export default function KtaGenerator({ selectedMember }) {
                 </div>
                 <div className="flex items-center space-x-3 my-1">
                   <div className="w-14 h-14 rounded-xl overflow-hidden border border-red-500/60 p-0.5 bg-slate-950 shrink-0">
-                    <img src={userData.avatar} alt="Avatar" className="w-full h-full object-cover rounded-lg" />
+                    <img 
+                      src={userData.avatar} 
+                      alt="Avatar" 
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-38C0160CBF08D325F42FD42644AC8D35-Png/150/150/AvatarHeadshot/Png/noFilter";
+                      }}
+                    />
                   </div>
                   <div className="overflow-hidden">
                     <h3 className="text-xs font-extrabold text-white truncate">{userData.name}</h3>

@@ -1,8 +1,8 @@
-// Buat variabel ini di file helper API atau di bagian atas komponen kamu:
-const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Variabel API URL ditaruh setelah import
+const API_URL = import.meta.env.VITE_API_URL || "https://roblox-studio-profile-production.up.railway.app";
 
 export default function Structure({ onSelectMember }) {
   const [membersList, setMembersList] = useState([]);
@@ -31,8 +31,8 @@ export default function Structure({ onSelectMember }) {
 
   useEffect(() => {
     fetchMembers();
-    fetch('http://localhost:5000/api/kta?keyword=8972804479').then(res => res.json()).then(data => data.avatar && setOwnerData(prev => ({ ...prev, ...data })));
-    fetch('http://localhost:5000/api/kta?keyword=9205433155').then(res => res.json()).then(data => data.avatar && setHeadAdminData(prev => ({ ...prev, ...data })));
+    fetch(`${API_URL}/api/kta?keyword=8972804479`).then(res => res.json()).then(data => data.avatar && setOwnerData(prev => ({ ...prev, ...data })));
+    fetch(`${API_URL}/api/kta?keyword=9205433155`).then(res => res.json()).then(data => data.avatar && setHeadAdminData(prev => ({ ...prev, ...data })));
   }, []);
 
   const handleAdminAuth = (e) => {
@@ -51,7 +51,7 @@ export default function Structure({ onSelectMember }) {
     const memberId = confirmModal.member.id;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/members/${memberId}`, {
+      const res = await fetch(`${API_URL}/api/members/${memberId}`, {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',
